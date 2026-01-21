@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "X Flag Adder",
+  "version": "1.0",
+  "description": "Adds a flag next to usernames on X.",
+  "content_scripts": [
+    {
+      "matches": ["https://twitter.com/*", "https://x.com/*"],
+      "js": ["content.js"]
+    }
+  ]
+}
