@@ -17,7 +17,7 @@ async function fetchUserList() {
         const response = await fetch("https://raw.githubusercontent.com/AdyaGMD/ZObserver/refs/heads/main/list.json");
         const data = await response.json();
         userConfig = data.users;
-        addFlag(); // Run once after data is loaded
+        addFlag(); 
     } catch (error) {
         console.error("Failed to load user list:", error);
     }
@@ -43,12 +43,12 @@ function addFlag() {
             handle = match ? match[1].toLowerCase() : '';
         }
 
-        // Find if the current handle exists in our fetched list
-        const matchedUser = userConfig.find(u => u.handle.toLowerCase() === handle);
+        // Check if the current handle exists within any of the handle arrays in JSON
+        const matchedGroup = userConfig.find(group => 
+            group.handles.map(h => h.toLowerCase()).includes(handle)
+        );
 
-        if (!matchedUser) {
-            return;
-        }
+        if (!matchedGroup) return;
 
         const nameContainer = component.querySelector('.r-1awozwy.r-18u37iz.r-dnmrzs') || 
                             component.querySelector('.r-18u37iz');
@@ -62,8 +62,7 @@ function addFlag() {
                 svgElement.addEventListener("click", (e) => {
                     e.stopPropagation();
                     e.preventDefault();
-                    // Redirect to the specific link defined in the JSON
-                    window.location.href = matchedUser.link;
+                    window.location.href = matchedGroup.link;
                 });
 
                 nameContainer.appendChild(svgElement);
@@ -73,7 +72,6 @@ function addFlag() {
     });
 }
 
-// Start the process
 fetchUserList();
 
 const observer = new MutationObserver(() => {

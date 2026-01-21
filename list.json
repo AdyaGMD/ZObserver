@@ -1,12 +1,8 @@
 {
   "users": [
     {
-      "handle": "potus",
-      "link": "https://example.com"
-    },
-    {
-      "handle": "whitehouse",
-      "link": "https://whitehouse.gov"
+      "handles": ["rauchg", "vercel", "nextjs", "vercel_status", "vercel_support", "vercel_dev", "turborepo", "v0", "aisdk"],
+      "link": "https://x.com/rauchg/status/1972669025525158031"
     }
   ]
 }
