@@ -1,0 +1,12 @@
+{
+  "users": [
+    {
+      "handle": "potus",
+      "link": "https://example.com"
+    },
+    {
+      "handle": "whitehouse",
+      "link": "https://whitehouse.gov"
+    }
+  ]
+}

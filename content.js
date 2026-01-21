@@ -9,38 +9,47 @@ const RED_STAR_SVG_HTML = `
 </svg>
 `;
 
+let userConfig = [];
+
+// Fetch the list from GitHub
+async function fetchUserList() {
+    try {
+        const response = await fetch("https://raw.githubusercontent.com/AdyaGMD/ZObserver/refs/heads/main/list.json");
+        const data = await response.json();
+        userConfig = data.users;
+        addFlag(); // Run once after data is loaded
+    } catch (error) {
+        console.error("Failed to load user list:", error);
+    }
+}
+
 function addFlag() {
-    // Select both timeline tweet name blocks and the main profile header name block
+    if (userConfig.length === 0) return;
+
     const nameComponents = document.querySelectorAll('[data-testid="User-Name"], [data-testid="UserName"]');
 
     nameComponents.forEach(component => {
         if (component.getAttribute("data-flag-added")) return;
 
-        // 1. Precise Handle Extraction
-        // We look for the link inside the component to find the handle of THIS specific tweet author
-        const anchor = component.querySelector('a[href]');
         let handle = "";
-
+        const anchor = component.querySelector('a[href]');
+        
         if (anchor) {
             const rawHref = anchor.getAttribute("href");
-            // Removes leading slash and everything after a second slash (to handle /POTUS/status/...)
             handle = rawHref ? rawHref.split('/')[1].toLowerCase() : '';
         } else {
-            // Fallback for profile headers where there might not be an anchor
             const handleText = component.innerText || "";
             const match = handleText.match(/@(\w+)/);
             handle = match ? match[1].toLowerCase() : '';
         }
 
-        // 2. Strict Filter
-        // If this specific tweet/header doesn't belong to potus, skip it.
-        if (handle !== "potus") {
-            // We don't mark as "flag-added" here because a retweet might load 
-            // later in this same slot, so we just return.
+        // Find if the current handle exists in our fetched list
+        const matchedUser = userConfig.find(u => u.handle.toLowerCase() === handle);
+
+        if (!matchedUser) {
             return;
         }
 
-        // 3. Find the exact container for name text and badges
         const nameContainer = component.querySelector('.r-1awozwy.r-18u37iz.r-dnmrzs') || 
                             component.querySelector('.r-18u37iz');
 
@@ -53,7 +62,8 @@ function addFlag() {
                 svgElement.addEventListener("click", (e) => {
                     e.stopPropagation();
                     e.preventDefault();
-                    window.location.href = "https://example.com";
+                    // Redirect to the specific link defined in the JSON
+                    window.location.href = matchedUser.link;
                 });
 
                 nameContainer.appendChild(svgElement);
@@ -63,10 +73,9 @@ function addFlag() {
     });
 }
 
-// Initial run
-addFlag();
+// Start the process
+fetchUserList();
 
-// Observer for scrolling and dynamic content
 const observer = new MutationObserver(() => {
     addFlag();
 });
